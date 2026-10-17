@@ -13,6 +13,7 @@ You roll a brand nobody asked for, sketch it on paper, then build it with Gemini
 - Example images, full size, with the exact prompts:
   - [`examples/class-run/`](examples/class-run/): the Rise & Purl example, from sketch to final ad.
   - [`examples/vocab/`](examples/vocab/): the images behind the vocabulary cards.
+  - [`examples/styles/`](examples/styles/): the same final ad in all six class styles. Only the Style clause changes.
 - Every example image was made in Gemini, except the two pencil sketches and the layout in `class-run/`, which were drawn for the test run.
 
 Life is what we make it.
