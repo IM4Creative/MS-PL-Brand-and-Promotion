@@ -419,6 +419,8 @@ textarea.prompt.sm{min-height:90px;font-size:15px}
 .best li .ico{color:var(--t-t);margin-top:2px}
 .best li b{display:block}
 @media (max-width:800px){.best ul{grid-template-columns:minmax(0,1fr)}.best .bt{display:none}}
+ .best.cop{border-width:1px}
+ .best.cop ul{grid-template-columns:minmax(0,1fr)}
 html{scroll-padding-top:calc(var(--hdr,66px) + 12px + env(safe-area-inset-top,0px));scroll-padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .flow{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--hair);box-shadow:0 -8px 30px rgba(15,31,35,.10);padding-bottom:env(safe-area-inset-bottom,0px)}
 .flow-in{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px}
@@ -535,7 +537,7 @@ var EXB={dice:["Wholesome","Sourdough Starter","Meal Kit","Competitive Knitters"
 var PHOTO_TO="yazakina1@gmail.com";
 
 var STAGES=[
- {id:"start",label:"Start",g:"Warm up",min:3,title:"Brand and Promotion",principle:"Design on paper first. Then generate a logo, a product and an ad for a brand that doesn’t exist yet.",done:"Gemini connected, or the Gemini app picked.",note:"Connect the room PCs before class. No API key? Pick Gemini app mode. It works like Class 1."},
+ {id:"start",label:"Start",g:"Warm up",min:3,title:"Brand and Promotion",principle:"Design on paper first. Then generate a logo, a product and an ad for a brand that doesn’t exist yet.",done:"Gemini connected, or Gemini or Copilot picked.",note:"Connect the room PCs before class. No API key? Pick Gemini app mode. It works like Class 1."},
  {id:"words",label:"Vocabulary",g:"Warm up",min:5,title:"Vocabulary",principle:"Twenty words. The first four are the spine of the class.",done:"10 or more words marked.",note:"Four groups. The four layers are the spine of the class. Everything else hangs off them."},
  {id:"tips",label:"Tips",g:"Warm up",min:3,title:"Tips",principle:"Keep these open. Most of them are built into this app.",done:"You have read both lists.",note:"Read tip 1 out loud: edit the prompt, don't argue with it. Then move."},
  {id:"a",p:"A",label:"A · Brand & sketches",g:"Practice",min:8,title:"Brand & sketches",principle:"Design on paper before you touch the AI.",badge:"No AI yet",done:"One brand sentence, a product sketch, a logo sketch.",note:"No screens until both sketches are photographed. Sixty seconds each. Big shapes beat detail."},
@@ -787,9 +789,9 @@ function saveImg(id,what){var o=img(id);if(!o)return;saveFile(slug()+"-"+what+".
 /* Some app views leave a clipboard call hanging. Give it 2.5 s, then say so instead of going quiet. */
 function within(p,ms){return Promise.race([p,new Promise(function(_,rej){setTimeout(rej,ms)})])}
 function copyImg(id){
- var o=img(id),fail=function(){toast("Copy didn't work here. Use Save, then add the file in Gemini with +.")};if(!o)return;
+ var o=img(id),fail=function(){toast("Copy didn't work here. Use Save, then add the file with +.")};if(!o)return;
  try{if(!navigator.clipboard||!navigator.clipboard.write||!window.ClipboardItem)throw 0;
-  within(navigator.clipboard.write([new ClipboardItem({"image/png":toPng(o)})]),2500).then(function(){toast("Image copied. Paste it into Gemini.")},fail);
+  within(navigator.clipboard.write([new ClipboardItem({"image/png":toPng(o)})]),2500).then(function(){toast("Image copied. Paste it into the chat.")},fail);
  }catch(e){fail()}
 }
 /* Plain-text copy runs synchronously inside the click first, then falls back to the async clipboard. */
@@ -1124,11 +1126,11 @@ function runBox(k,title){
   /* One clipboard holds one thing, so each step carries its own button, in the order Gemini needs them. */
   var many=sp.att.length>1;
   h+='<ol class="steps">'+
-  '<li><div class="sx"><span>Open Gemini and start a new chat. An old chat mixes in your last practice.</span><a class="btn tone sm" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini '+ic("open")+'</a></div></li>'+
-  (sp.att.length?'<li><div class="sx"><span>Hit + and add '+(many?'these in this order':'this image')+'. Copy and paste '+(many?'each one':'it')+', or save it and upload the file.</span><div class="hrows">'+sp.att.map(function(a){var o=img(a.id),p=a.label.split(", "),h0=p.shift();return '<div class="hrow"><span><b>'+esc(cap(h0))+'</b>, '+esc(p.join(", "))+'</span>'+(o?'<span class="btnrow"><button class="btn sec sm" data-act="copyimg" data-id="'+a.id+'">'+ic("copy")+'Copy</button><button class="btn sec sm" data-act="saveimg" data-id="'+a.id+'" data-name="'+esc(h0.replace(/\s+/g,"-"))+'">'+ic("save")+'Save</button></span>':'<span class="tagw">Missing</span>')+'</div>'}).join("")+'</div></div></li>':'')+
-  '<li><div class="sx"><span>Copy the prompt. Paste it into Gemini and send.</span><button class="btn sec sm" data-act="copyprompt" data-k="'+k+'">'+ic("copy")+'Copy prompt</button></div></li>'+
-  '<li><div class="sx"><span>Download the image Gemini made. Bring it back below, then confirm the exact prompt you sent.</span></div></li></ol>'+
-  '<div class="drop pick" data-drop="res:'+k+'" style="min-height:150px"><p class="big">Bring the result back</p><p class="muted small">Click or tap to choose it. Or paste with Ctrl+V, or drop the file.</p><span class="btn sec sm" aria-hidden="true">'+ic("up")+'Choose file</span>'+fileIn("res:"+k,"file-res-"+k,"Add the image Gemini made")+'</div>'+
+  '<li><div class="sx"><span>Open Gemini or Copilot and start a new chat. An old chat mixes in your last practice.</span><span class="btnrow"><a class="btn tone sm" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini '+ic("open")+'</a><a class="btn sec sm" href="https://m365.cloud.microsoft/chat" target="_blank" rel="noopener">Open Copilot '+ic("open")+'</a></span></div></li>'+
+  (sp.att.length?'<li><div class="sx"><span>Hit + and add '+(many?'these in this order, one at a time':'this image')+'. Copy and paste '+(many?'each one':'it')+', or save it and upload the file.</span><div class="hrows">'+sp.att.map(function(a){var o=img(a.id),p=a.label.split(", "),h0=p.shift();return '<div class="hrow"><span><b>'+esc(cap(h0))+'</b>, '+esc(p.join(", "))+'</span>'+(o?'<span class="btnrow"><button class="btn sec sm" data-act="copyimg" data-id="'+a.id+'">'+ic("copy")+'Copy</button><button class="btn sec sm" data-act="saveimg" data-id="'+a.id+'" data-name="'+esc(h0.replace(/\s+/g,"-"))+'">'+ic("save")+'Save</button></span>':'<span class="tagw">Missing</span>')+'</div>'}).join("")+'</div></div></li>':'')+
+  '<li><div class="sx"><span>Copy the prompt. Paste it into the chat and send.</span><button class="btn sec sm" data-act="copyprompt" data-k="'+k+'">'+ic("copy")+'Copy prompt</button></div></li>'+
+  '<li><div class="sx"><span>Download the image it made. Bring it back below, then confirm the exact prompt you sent.</span></div></li></ol>'+copHTML(k,many)+
+  '<div class="drop pick" data-drop="res:'+k+'" style="min-height:150px"><p class="big">Bring the result back</p><p class="muted small">Click or tap to choose it. Or paste with Ctrl+V, or drop the file.</p><span class="btn sec sm" aria-hidden="true">'+ic("up")+'Choose file</span>'+fileIn("res:"+k,"file-res-"+k,"Add the image the AI made")+'</div>'+
   (S.gem.mode==="direct"?'<p class="gline">Want it to run in here? <button class="lnkbtn" data-act="sheet">Connect Gemini</button></p>':'');
  }
  if(last&&last.status==="error"&&!busy)h+='<div class="callout bad"><div><b>That run didn’t finish</b>'+esc(last.err)+'</div></div>';
@@ -1166,7 +1168,7 @@ function usedBox(r){
  var p=promptRun(r);if(!p)return "";
  if(p.via==="direct")return '<p class="gline">Sent by the app exactly as shown. Nothing to update.</p>';
  var ok=!!p.ok,other=p!==r;
- return '<div class="blk" id="used-'+p.id+'"><div class="callout'+(ok?' ok':'')+'" id="usedc-'+p.id+'"><div><b id="usedh-'+p.id+'">'+usedHead(p)+'</b>Changed words in Gemini, or sent a follow-up message? Paste exactly what you sent. It goes into your storybook with this image.</div></div>'+
+ return '<div class="blk" id="used-'+p.id+'"><div class="callout'+(ok?' ok':'')+'" id="usedc-'+p.id+'"><div><b id="usedh-'+p.id+'">'+usedHead(p)+'</b>Changed words in the chat, or sent a follow-up message? Paste exactly what you sent. It goes into your storybook with this image.</div></div>'+
  '<label class="flab" for="usedt-'+p.id+'">Prompt you sent'+(other?' for run '+runIndex(p):'')+'</label><textarea class="prompt sm" id="usedt-'+p.id+'" data-in="used" data-id="'+p.id+'" spellcheck="false">'+esc(usedPrompt(p))+'</textarea>'+
  '<div class="btnrow"><button class="btn '+(ok?'sec':'tone')+' sm" data-act="confirmp" data-id="'+p.id+'">'+ic("check")+(ok?'Confirmed':'This is the prompt I sent')+'</button>'+(p.used!=null&&p.used!==p.prompt?'<button class="lnkbtn" data-act="usedreset" data-id="'+p.id+'">Put back the class prompt</button>':'')+'</div></div>';
 }
@@ -1182,7 +1184,7 @@ function checkAside(k){
 
 /* ---------- connect ---------- */
 function stInfo(){var m=S.gem.mode,st=GEM.status;
- if(m==="handoff")return {c:"hand",t:"Gemini app",l:"Gemini app mode. Prompts copy out, images paste back."};
+ if(m==="handoff")return {c:"hand",t:"Gemini or Copilot",l:"App mode. Prompts copy out, images paste back."};
  if(st==="ok")return {c:"ok",t:"Gemini connected",l:"Connected to "+S.gem.model};
  if(st==="checking")return {c:"wait",t:"Connecting",l:"Checking your key"};
  if(st==="blocked")return {c:"bad",t:"Blocked here",l:GEM.msg};
@@ -1191,7 +1193,7 @@ function stInfo(){var m=S.gem.mode,st=GEM.status;
 }
 function connectPanel(sx){
  var m=S.gem.mode,st=GEM.status,i=stInfo();
- var h='<div class="modes">'+(hosted()?'<button class="mode" disabled aria-pressed="false"><b>Direct sync</b><span>Only in the standalone file, Brand and Promotion.html, opened in Chrome. This claude.ai page can’t reach Google.</span></button>':'<button class="mode" data-act="mode" data-m="direct" aria-pressed="'+(m==="direct")+'"><b>Direct sync</b><span>Gemini runs inside this app. Your sketches and results move between steps on their own. Needs a Gemini API key.</span></button>')+'<button class="mode" data-act="mode" data-m="handoff" aria-pressed="'+(m==="handoff")+'"><b>Gemini app</b><span>Copy each prompt into gemini.google.com and paste the image back. Same as Class 1. Works anywhere.</span></button></div>';
+ var h='<div class="modes">'+(hosted()?'<button class="mode" disabled aria-pressed="false"><b>Direct sync</b><span>Only in the standalone file, Brand and Promotion.html, opened in Chrome. This claude.ai page can’t reach Google.</span></button>':'<button class="mode" data-act="mode" data-m="direct" aria-pressed="'+(m==="direct")+'"><b>Direct sync</b><span>Gemini runs inside this app. Your sketches and results move between steps on their own. Needs a Gemini API key.</span></button>')+'<button class="mode" data-act="mode" data-m="handoff" aria-pressed="'+(m==="handoff")+'"><b>Gemini or Copilot</b><span>Copy each prompt into Gemini or Copilot and paste the image back. Same as Class 1. Works anywhere.</span></button></div>';
  h+='<div class="gstat '+i.c+'"><span class="dot"></span><span>'+esc(i.l)+'</span></div>';
  if(m==="direct"){
   if(hosted())h+='<div class="callout info"><div><b>This claude.ai page can’t call Google directly</b>Open the standalone file, Brand and Promotion.html, in Chrome to sync. Here, Gemini app mode works.</div></div>';
@@ -1239,7 +1241,7 @@ function mWelcome(){
  return P('<div class="blk"><div class="lab">What you make today, in order</div>'+pipeHTML(false)+'<p class="gline">Example: '+esc(EXB.name)+', made in this class.</p></div><div class="blk"><div class="lab">How the hour runs</div>'+classMapHTML()+'</div>',
  '<h3>Before you start</h3><p><b>Prerequisite.</b> Restore and Remix, Class 1.</p><p><b>Tools.</b> Paper and pencil first. Gemini comes in at Practice B.</p><p><b>You leave with.</b> One finished ad: your logo, your product, your layout, one style.</p><span class="pill">Life is what we make it.</span>');
 }
-function mConnect(){return P('<div class="blk">'+connectPanel("p")+'</div>','<h3>Which one?</h3><p><b>Direct sync</b> runs every practice in this app. You need a free API key from Google AI Studio.</p><p><b>Gemini app</b> needs nothing new. You copy the prompt out and paste the picture back.</p><p class="small muted">Either way, every step works the same.</p>')}
+function mConnect(){return P('<div class="blk">'+connectPanel("p")+'</div>','<h3>Which one?</h3><p><b>Direct sync</b> runs every practice in this app. You need a free API key from Google AI Studio.</p><p><b>Gemini or Copilot</b> needs nothing new. You copy the prompt out and paste the picture back. Pick this for Copilot.</p><p class="small muted">Either way, every step works the same.</p>')}
 function mWords(gi){
  var G=VOCAB[gi],known=Object.keys(S.vocab).length;
  return P('<div class="vgrid">'+G.terms.map(function(t){var on=!!S.vocab[t[0]];return '<button class="vc'+(t[3]?" tn-"+t[3]:"")+'" data-act="vocab" data-t="'+esc(t[0])+'" aria-pressed="'+on+'">'+vthumb(t[0])+'<span class="w">'+esc(t[0])+'</span><span>'+esc(t[1])+'</span>'+(t[2]?'<span class="x">'+esc(t[2])+'</span>':'')+'<span class="k">'+(on?ckI()+"Got it":"Tap if you know it")+'</span></button>'}).join("")+'</div>',
@@ -1382,7 +1384,7 @@ function mReset(){
  '<h3>Your work lives in this browser only.</h3><p>Nothing uploads anywhere except the images you send to Gemini.</p>');
 }
 var FLOW={
- start:[{id:"welcome",l:"Welcome",h:"Design on paper first. Then let Gemini build it.",v:mWelcome},{id:"connect",l:"Connect Gemini",h:"Connect Gemini.",v:mConnect,ok:function(){return S.gem.mode==="handoff"||GEM.status==="ok"},need:"Pick Direct sync or Gemini app"}],
+ start:[{id:"welcome",l:"Welcome",h:"Design on paper first. Then let the AI build it.",v:mWelcome},{id:"connect",l:"Pick your AI",h:"Pick your AI.",v:mConnect,ok:function(){return S.gem.mode==="handoff"||GEM.status==="ok"},need:"Pick Direct sync, or Gemini or Copilot"}],
  words:[{l:"Four layers",h:"Learn the four layers.",v:function(){return mWords(0)}},{l:"1-bit",h:"Words for 1-bit logos.",v:function(){return mWords(1)}},{l:"Product shots",h:"Words for product shots.",v:function(){return mWords(2)}},{l:"Compiling",h:"Words for compiling images.",v:function(){return mWords(3)}},{l:"Quiz",h:"Pick the word that matches.",v:mQuiz}],
  tips:[{l:"Writing the prompt",h:"Write the prompt.",v:function(){return mTips(0)}},{l:"Working with the AI",h:"Work with the AI.",v:function(){return mTips(1)}}],
  a:[{l:"Roll",h:"Roll a brand nobody asked for.",v:mRoll},{l:"Name it",h:"Name it. Say what it offers in one line.",v:mName,ok:function(){return !!nm()&&!!S.brand.line.trim()},need:"Name the brand and write one line"},{l:"Product sketch",h:"Sketch the product. Sixty seconds.",v:function(){return mSketch("product")},ok:function(){return !!img(S.sk.product)},need:"Photograph your product sketch"},{l:"Logo sketch",h:"Sketch the logo. Sixty seconds.",v:function(){return mSketch("logo")},ok:function(){return !!img(S.sk.logo)},need:"Photograph your logo sketch"}],
@@ -1521,7 +1523,7 @@ function makeDeck(PG,IM){
 function storyHTML(){
  var un=unconfirmed(),n=S.runs.filter(function(r){return r.status!=="error"&&img(r.imgId)}).length,any=n||!!nm()||["product","logo","layout"].some(function(k){return img(S.sk[k])});
  return '<div class="blk" id="story"><div class="lab">Your storybook</div><p>A short PowerPoint, five slides at most: your sketches, each kept image with what went in and the prompt you sent, your final ad, and every run you tried. Every prompt is in the slide notes.</p>'+
- (un.length?'<div class="callout"><div><b>'+un.length+(un.length>1?' prompts aren’t':' prompt isn’t')+' confirmed yet.</b>Before you submit your files and your final ad, update each prompt to the exact one you sent in Gemini.<div class="btnrow" style="margin-top:12px">'+un.map(function(r){return '<button class="btn sec sm" data-act="gorun" data-id="'+r.id+'">'+esc(PRACT[r.k])+', run '+runIndex(r)+'</button>'}).join("")+'</div></div></div>':(n?'<div class="callout ok"><div><b>Every prompt is confirmed.</b>Your storybook shows the prompts you actually sent.</div></div>':''))+
+ (un.length?'<div class="callout"><div><b>'+un.length+(un.length>1?' prompts aren’t':' prompt isn’t')+' confirmed yet.</b>Before you submit your files and your final ad, update each prompt to the exact one you sent.<div class="btnrow" style="margin-top:12px">'+un.map(function(r){return '<button class="btn sec sm" data-act="gorun" data-id="'+r.id+'">'+esc(PRACT[r.k])+', run '+runIndex(r)+'</button>'}).join("")+'</div></div></div>':(n?'<div class="callout ok"><div><b>Every prompt is confirmed.</b>Your storybook shows the prompts you actually sent.</div></div>':''))+
  '<label class="flab" for="maker"><span class="fl">Your name, for the cover <span class="hint">Optional</span></span><input class="field" id="maker" data-in="f" data-path="maker" value="'+esc(S.maker)+'" autocomplete="off"></label>'+
  '<div class="btnrow">'+(STORYBUSY?'<div class="busy"><span class="spin" aria-hidden="true"></span><span>Building your storybook</span></div>':'<button class="btn tone" data-act="story"'+(any?'':' disabled')+'>'+ic("save")+'Export storybook (PPTX)</button>')+'</div>'+(any?(n?'':'<p class="gline">No Gemini runs yet. The storybook will hold your brand and sketches so far.</p>'):'<p class="gline">Name your brand or add a sketch first.</p>')+'</div>';
 }
@@ -1538,6 +1540,12 @@ function band(i){
 function stepper(id){
  var F=FLOW[id],m=curMove(id),far=S.far[id]||0;
  return '<nav class="moves" aria-label="Steps in this part">'+F.map(function(x,j){var ok=x.ok?!!x.ok():(j!==m&&!!(S.seen[id]&&S.seen[id][j]));return (j?'<span class="mvsep" aria-hidden="true"></span>':'')+'<button class="mv'+(ok?" done":"")+'" data-act="mv" data-i="'+j+'"'+(j===m?' aria-current="step"':'')+'><span class="n">'+(ok&&j!==m?ckI():(j+1))+'</span>'+esc(x.l)+'</button>'}).join("")+'</nav>';
+}
+/* Copilot runs in app mode too. Tips from the 2026-10-28 Copilot run of the Rise & Purl example. */
+function copHTML(k,many){
+ var T=(many?[["Add pictures one at a time, top to bottom.","Copilot shows the newest first while you add. It still sends them in your order."]]:[]).concat([["Rename every save.","Each one downloads as Designer.png."]]);
+ if(k==="g")T=T.concat([["It comes back tall, 2:3.","Copilot has no 4:5 size. Fine on screen."],["Words you didn’t ask for?","Add “No other text.” to the end of the prompt."],["Give it 2 minutes.","Don’t send it twice."]]);
+ return '<details class="best cop"'+(S.cop?" open":"")+'><summary data-act="cop"><span class="bk">Using Copilot?</span><span class="bn">'+T.length+(T.length>1?' tips':' tip')+'</span>'+ic("next")+'</summary><ul>'+T.map(function(t){return '<li>'+ic("check")+'<span><b>'+esc(t[0])+'</b>'+esc(t[1])+'</span></li>'}).join("")+'</ul></details>';
 }
 function bestHTML(id){
  var B=BEST[id];if(!B)return "";var s=STAGES[stageIx()],open=S.best[id]!=null?S.best[id]:curMove(id)===0;
@@ -1567,7 +1575,7 @@ function journeyHTML(){
 var LASTJR="";
 function refreshChrome(){
  var jr=journeyHTML();if(jr!==LASTJR){$("#jr").innerHTML=jr;LASTJR=jr}
- var i=stInfo(),p=$("#gpill");p.className="hbtn "+i.c;p.innerHTML='<span class="dot"></span><span class="gt">'+esc(i.t)+'</span><span class="show-sm">Gemini</span>';p.setAttribute("aria-label","Gemini: "+i.t);
+ var i=stInfo(),p=$("#gpill");p.className="hbtn "+i.c;p.innerHTML='<span class="dot"></span><span class="gt">'+esc(i.t)+'</span><span class="show-sm">AI</span>';p.setAttribute("aria-label","AI: "+i.t);
  var fl=$("#flow");if(fl)fl.innerHTML=flowHTML();
 }
 function render(){
@@ -1680,6 +1688,7 @@ var ACT={
  forget:function(){GEM.key="";GEM.keyDraft="";GEM.status="off";store.del("key");S.gem.remember=false;save();render();renderSheet();toast("Disconnected. Key removed from this computer.")},
  remember:function(el){S.gem.remember=el.checked;if(el.checked&&GEM.key&&GEM.status==="ok")store.set("key",GEM.key);if(!el.checked)store.del("key");save()},
  best:function(el){var d=el.parentNode;d.open=!d.open;S.best[el.dataset.s]=d.open;save()},
+ cop:function(el){var d=el.parentNode;d.open=!d.open;S.cop=d.open;save()},
  pick:function(el){var p=el.dataset.path;setP(p,el.dataset.v);if(p==="P.f.mode"){if(el.dataset.v==="draw"){S.kept.layout=null;wireSoon()}else if(S.kept.layout&&S.kept.layout===S.P.f.wire)S.kept.layout=null}save();render()},
  tog:function(el){var a=getP(el.dataset.path).slice(),v=el.dataset.v,ix=a.indexOf(v),mx=+el.dataset.max||9;if(ix>-1)a.splice(ix,1);else{if(a.length>=mx){toast("Up to "+mx+". Unpick one first.");return}a.push(v)}setP(el.dataset.path,a);save();render()},
  roll:roll,
